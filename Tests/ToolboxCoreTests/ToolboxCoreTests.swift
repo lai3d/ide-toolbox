@@ -139,7 +139,11 @@ final class NetworkTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: dir) }
         let installer = Installer(installDirectory: dir, searchDirectories: [])
         for tool in Catalog.tools + [Catalog.toolbox] {
-            let release = try await XCTUnwrapAsync(try await GitHubReleases().latest(for: tool))
+            guard let release = try await GitHubReleases().latest(for: tool) else {
+                XCTAssertNotEqual(tool, Catalog.toolbox, "the Toolbox itself must have a release")
+                print("no release yet: \(tool.appName)")
+                continue
+            }
             let box = ProgressBox()
             let app = try await installer.install(tool, release: release) { box.last = $0 }
             XCTAssertEqual(box.last, 1, tool.appName)
@@ -147,8 +151,6 @@ final class NetworkTests: XCTestCase {
             XCTAssertNoThrow(try Installer.run("/usr/bin/codesign", ["-v", app.path]), tool.appName)
         }
     }
-
-    func XCTUnwrapAsync<T>(_ value: T?) async throws -> T { try XCTUnwrap(value) }
 }
 
 final class ProgressBox: @unchecked Sendable { var last: Double = 0 }
