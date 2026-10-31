@@ -17,7 +17,7 @@ A menu bar app for macOS that installs, updates and launches the lai3d native ID
 - **Recent projects** for each IDE, one click to reopen.
 - **Command-line launchers** (optional) in `~/.local/bin`. Existing files the Toolbox didn't write are never overwritten.
 
-If the menu bar is too crowded to show the icon, launch with `open -a IDEToolbox --args --window`, or open the app again from Finder, to get the panel in a regular window.
+If the menu bar is too crowded to show the icon, launch with `open -a IDEToolbox --args --window`, or open the app again from Finder, to get the panel in a regular window. `--update-self` updates the Toolbox to the latest release and relaunches it.
 
 ## Adding an app
 

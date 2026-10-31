@@ -35,10 +35,15 @@ public struct Tool: Identifiable, Hashable, Sendable {
 }
 
 public enum Catalog {
+    /// The Toolbox itself, so it can update from its own releases.
+    public static let toolbox = Tool(id: "io.github.lai3d.idetoolbox", appName: "IDEToolbox", repo: "lai3d/ide-toolbox",
+                                     summary: "IDE Toolbox", symbol: "square.grid.2x2", cliName: "",
+                                     acceptsFolderArgument: false)
+
     public static let tools: [Tool] = [
         Tool(id: "io.github.lai3d.goide", appName: "GoIDE", repo: "lai3d/golang-ide",
              summary: "Go IDE with gopls", symbol: "chevron.left.forwardslash.chevron.right",
-             cliName: "goide", acceptsFolderArgument: true),
+             cliName: "goide", acceptsFolderArgument: true, recentsDefaultsKey: "recentProjects"),
         Tool(id: "io.github.lai3d.pyide", appName: "PyIDE", repo: "lai3d/python-ide",
              summary: "Python IDE with pyright", symbol: "curlybraces",
              cliName: "pyide", acceptsFolderArgument: true),
