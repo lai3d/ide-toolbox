@@ -133,18 +133,19 @@ final class FileSystemTests: XCTestCase {
 
 /// Hits GitHub for real: `TOOLBOX_NETWORK_TESTS=1 swift test --filter NetworkTests`.
 final class NetworkTests: XCTestCase {
-    func testInstallLatestGoIDEIntoTempDir() async throws {
+    func testInstallEveryCatalogAppIntoTempDir() async throws {
         try XCTSkipUnless(ProcessInfo.processInfo.environment["TOOLBOX_NETWORK_TESTS"] == "1")
-        let tool = try XCTUnwrap(Catalog.tools.first { $0.appName == "GoIDE" })
-        let release = try await XCTUnwrapAsync(try await GitHubReleases().latest(for: tool))
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent("toolbox-net-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: dir) }
         let installer = Installer(installDirectory: dir, searchDirectories: [])
-        let box = ProgressBox()
-        let app = try await installer.install(tool, release: release) { box.last = $0 }
-        XCTAssertEqual(box.last, 1)
-        XCTAssertEqual(installer.installed(tool)?.version, release.version)
-        try Installer.run("/usr/bin/codesign", ["-v", app.path])
+        for tool in Catalog.tools + [Catalog.toolbox] {
+            let release = try await XCTUnwrapAsync(try await GitHubReleases().latest(for: tool))
+            let box = ProgressBox()
+            let app = try await installer.install(tool, release: release) { box.last = $0 }
+            XCTAssertEqual(box.last, 1, tool.appName)
+            XCTAssertEqual(installer.installed(tool)?.version, release.version, tool.appName)
+            XCTAssertNoThrow(try Installer.run("/usr/bin/codesign", ["-v", app.path]), tool.appName)
+        }
     }
 
     func XCTUnwrapAsync<T>(_ value: T?) async throws -> T { try XCTUnwrap(value) }
