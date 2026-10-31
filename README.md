@@ -5,6 +5,7 @@ A menu bar app for macOS that installs, updates and launches the lai3d native ID
 | App | Repo | Launcher |
 |---|---|---|
 | GoIDE | [lai3d/golang-ide](https://github.com/lai3d/golang-ide) | `goide .` |
+| RustIDE | [lai3d/rust-ide](https://github.com/lai3d/rust-ide) | `rustide .` |
 | PyIDE | [lai3d/python-ide](https://github.com/lai3d/python-ide) | `pyide .` |
 | JavaIDE | [lai3d/java-ide](https://github.com/lai3d/java-ide) | `javaide .` |
 | ESPIDE | [lai3d/esp32-ide](https://github.com/lai3d/esp32-ide) | `espide .` |
