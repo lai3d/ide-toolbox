@@ -8,6 +8,9 @@ A menu bar app for macOS that installs, updates and launches the lai3d native ID
 | PyIDE | [lai3d/python-ide](https://github.com/lai3d/python-ide) | `pyide .` |
 | JavaIDE | [lai3d/java-ide](https://github.com/lai3d/java-ide) | `javaide .` |
 | CSharpIDE | [lai3d/csharp-ide](https://github.com/lai3d/csharp-ide) | `csharpide .` |
+| RustIDE | [lai3d/rust-ide](https://github.com/lai3d/rust-ide) | `rustide .` |
+| CppIDE | [lai3d/cpp-ide](https://github.com/lai3d/cpp-ide) | `cppide .` |
+| PHPIDE | [lai3d/php-ide](https://github.com/lai3d/php-ide) | `phpide .` |
 | ESPIDE | [lai3d/esp32-ide](https://github.com/lai3d/esp32-ide) | `espide .` |
 | DBIDE | [lai3d/database-ide](https://github.com/lai3d/database-ide) | `dbide` |
 | Grove | [lai3d/grove](https://github.com/lai3d/grove) | `grove .` |

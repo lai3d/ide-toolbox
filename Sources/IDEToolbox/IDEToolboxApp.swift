@@ -114,7 +114,7 @@ struct ToolboxView: View {
                 Text("Command-line launchers in ~/.local/bin")
             }
             .toggleStyle(.checkbox)
-            .help("Adds goide, pyide, javaide, csharpide, espide, dbide and grove commands, e.g. `pyide .`")
+            .help("Adds a command per IDE (goide, pyide, rustide, …) in ~/.local/bin, e.g. `pyide .`")
             HStack {
                 Text("Installs to ~/Applications").font(.caption).foregroundStyle(.secondary)
                 Spacer()
