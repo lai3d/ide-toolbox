@@ -25,6 +25,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         if CommandLine.arguments.contains("--window") { showWindow() }
+        if CommandLine.arguments.contains("--update-self") {
+            // Waits for the launch-time update check, then updates and relaunches if there is something newer.
+            Task {
+                while model.lastChecked == nil { try? await Task.sleep(for: .milliseconds(200)) }
+                await model.updateSelf()
+            }
+        }
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows: Bool) -> Bool {
@@ -86,6 +93,23 @@ struct ToolboxView: View {
 
     private var footer: some View {
         VStack(alignment: .leading, spacing: 6) {
+            if let update = model.selfUpdate {
+                HStack {
+                    Text(model.selfUpdateError ?? "IDE Toolbox \(update.version?.description ?? update.tag) is available")
+                        .font(.caption)
+                        .foregroundStyle(model.selfUpdateError == nil ? Color.accentColor : .red)
+                    Spacer()
+                    if model.selfUpdating {
+                        ProgressView().controlSize(.small)
+                    } else if ToolboxModel.replaceableBundle != nil {
+                        Button("Update & Relaunch") { Task { await model.updateSelf() } }
+                            .controlSize(.small)
+                    } else {
+                        Button("Download") { NSWorkspace.shared.open(update.pageURL) }
+                            .controlSize(.small)
+                    }
+                }
+            }
             Toggle(isOn: $model.launchersEnabled) {
                 Text("Command-line launchers in ~/.local/bin")
             }

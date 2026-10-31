@@ -47,7 +47,25 @@ final class ToolboxModel {
     let launchers = Launchers()
     private var timer: Timer?
 
-    var updateCount: Int { tools.filter(\.updateAvailable).count }
+    /// Latest Toolbox release, when newer than the running copy.
+    var selfUpdate: Release?
+    var selfUpdating = false
+    var selfUpdateError: String?
+
+    var updateCount: Int { tools.filter(\.updateAvailable).count + (selfUpdate == nil ? 0 : 1) }
+
+    /// Running version of the Toolbox (nil under `swift run`).
+    static var runningVersion: Version? {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString").flatMap { $0 as? String }.flatMap(Version.init)
+    }
+
+    /// Where the running .app lives, if the Toolbox can replace it there.
+    static var replaceableBundle: URL? {
+        let app = Bundle.main.bundleURL
+        guard app.pathExtension == "app",
+              FileManager.default.isWritableFile(atPath: app.deletingLastPathComponent().path) else { return nil }
+        return app
+    }
 
     init() {
         launchersEnabled = UserDefaults.standard.bool(forKey: "launchersEnabled")
@@ -75,6 +93,7 @@ final class ToolboxModel {
             for state in tools {
                 group.addTask { await self.fetchLatest(state) }
             }
+            group.addTask { await self.fetchSelfUpdate() }
         }
         lastChecked = Date()
     }
@@ -87,6 +106,33 @@ final class ToolboxModel {
             state.error = error.localizedDescription
         }
         state.checked = true
+    }
+
+    private func fetchSelfUpdate() async {
+        guard let current = Self.runningVersion,
+              let latest = try? await releases.latest(for: Catalog.toolbox),
+              let version = latest.version, current < version else { selfUpdate = nil; return }
+        selfUpdate = latest
+    }
+
+    /// Replaces the running Toolbox with the latest release and relaunches it.
+    func updateSelf() async {
+        guard let release = selfUpdate, let app = Self.replaceableBundle, !selfUpdating else { return }
+        selfUpdating = true
+        selfUpdateError = nil
+        do {
+            let installer = Installer(installDirectory: app.deletingLastPathComponent(), searchDirectories: [])
+            let installed = try await installer.install(Catalog.toolbox, release: release)
+            // Relaunch once this process has exited.
+            let relaunch = Process()
+            relaunch.executableURL = URL(fileURLWithPath: "/bin/sh")
+            relaunch.arguments = ["-c", "sleep 1; /usr/bin/open \"$0\"", installed.path]
+            try relaunch.run()
+            NSApp.terminate(nil)
+        } catch {
+            selfUpdateError = error.localizedDescription
+            selfUpdating = false
+        }
     }
 
     func install(_ state: ToolState) async {
