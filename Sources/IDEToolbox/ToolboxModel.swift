@@ -168,7 +168,7 @@ final class ToolboxModel {
         guard let app = state.installed?.url else { return }
         let config = NSWorkspace.OpenConfiguration()
         if let folder, state.tool.acceptsFolderArgument {
-            config.arguments = [folder.path]
+            config.arguments = [folder.path] + Catalog.folderLaunchArguments
             // Arguments only reach a freshly launched process, and each IDE window is one project.
             config.createsNewApplicationInstance = state.isRunning
             try? recentsStore.record(folder.path, bundleID: state.tool.bundleID)
