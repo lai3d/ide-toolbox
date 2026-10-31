@@ -33,7 +33,7 @@ public struct Launchers: Sendable {
           /*) target="$1" ;;
           *)  target="$PWD/$1" ;;
         esac
-        exec open -n -a "$APP" --args "$target"
+        exec open -n -a "$APP" --args "$target" \(Catalog.folderLaunchArguments.joined(separator: " "))
 
         """
     }

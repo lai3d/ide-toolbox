@@ -35,6 +35,12 @@ public struct Tool: Identifiable, Hashable, Sendable {
 }
 
 public enum Catalog {
+    /// Appended after the folder when launching an IDE with one. Without it, AppKit treats the folder
+    /// as a document to open at launch, and SwiftUI apps built with the macOS 26 SDK then skip their
+    /// default window on a first launch (no saved state). `-Key value` in argv sets that default
+    /// for this launch only; the IDEs' own argument parsing ignores it (they take the first folder).
+    public static let folderLaunchArguments = ["-NSTreatUnknownArgumentsAsOpen", "NO"]
+
     /// The Toolbox itself, so it can update from its own releases.
     public static let toolbox = Tool(id: "io.github.lai3d.idetoolbox", appName: "IDEToolbox", repo: "lai3d/ide-toolbox",
                                      summary: "IDE Toolbox", symbol: "square.grid.2x2", cliName: "",

@@ -109,7 +109,7 @@ final class FileSystemTests: XCTestCase {
         try launchers.install(tool, app: app)
         XCTAssertTrue(launchers.isInstalled(tool))
         let script = try String(contentsOf: launchers.url(for: tool), encoding: .utf8)
-        XCTAssertTrue(script.contains(#"open -n -a "$APP" --args "$target""#))
+        XCTAssertTrue(script.contains(#"open -n -a "$APP" --args "$target" -NSTreatUnknownArgumentsAsOpen NO"#))
 
         launchers.remove(tool)
         try "#!/bin/sh\necho mine\n".write(to: launchers.url(for: tool), atomically: true, encoding: .utf8)
